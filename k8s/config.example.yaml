@@ -1,0 +1,15 @@
+# Copy to config.local.yaml (git-ignored), adjust and apply once:
+#   kubectl -n store apply -f k8s/config.local.yaml
+# The Secret "auth-secrets" (JWT_SECRET) is created separately; see README, "Deploy".
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-config
+data:
+  SERVER_PORT: '8080'
+  MANAGEMENT_PORT: '9091'
+  ACCOUNT_URL: http://account:8080
+  JWT_DURATION: PT1H
+  JWT_ISSUER: store-auth
+  JWT_COOKIE_SECURE: 'true'
+  JWT_COOKIE_SAME_SITE: Lax

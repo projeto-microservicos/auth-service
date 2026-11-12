@@ -1,0 +1,37 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  application:
+    name: auth
+  mvc:
+    problemdetails:
+      enabled: true
+
+store:
+  account-url: ${ACCOUNT_URL:http://account:8080}
+  jwt:
+    # HS256 needs >= 32 bytes. No default on purpose: the service refuses to start without it.
+    secret: ${JWT_SECRET}
+    duration: ${JWT_DURATION:PT1H}
+    issuer: ${JWT_ISSUER:store-auth}
+  cookie:
+    name: __store_jwt_token
+    secure: ${JWT_COOKIE_SECURE:true}
+    same-site: ${JWT_COOKIE_SAME_SITE:Lax}
+
+management:
+  server:
+    port: ${MANAGEMENT_PORT:9091}
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
