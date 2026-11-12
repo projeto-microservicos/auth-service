@@ -59,7 +59,7 @@ docker compose up --build -d --wait  # suba o account-service na mesma rede
 
 ## CI/CD (GitHub Actions)
 
-Igual aos outros serviços: **verify** em todo push/PR; **deploy** para o ECR `auth-service` e EKS em push na `main`, quando a variável da organização `AWS_ROLE_ARN` existe (OIDC, sem chave AWS no GitHub).
+Igual aos outros serviços: **verify** em todo push/PR; **deploy** para o ECR `auth-service` e EKS em push na `main`, quando a variável de repositório `AWS_ROLE_ARN` existe (OIDC, sem chave AWS no GitHub).
 
 ### Preparação única no cluster
 
