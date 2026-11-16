@@ -9,7 +9,6 @@ import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,9 +21,7 @@ import store.auth.api.SolvedToken;
 import store.auth.api.TokenOut;
 
 /**
- * Executable specification of AuthService/JwtService against a stub account-service.
- * Remove @Disabled as you implement each TODO(auth).
- */
+ * Authentication contract against a stub account-service. */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
     "management.server.port=0",
     "store.jwt.secret=test-secret-with-at-least-32-bytes-0123456789",
@@ -76,7 +73,6 @@ class AuthContractTest {
     }
 
     @Test
-    @Disabled("TODO(auth): implement AuthService.register")
     void registerCreatesTheAccount() {
         var response = api().post().uri("/auth/register")
             .body(Map.of("name", "Ana", "email", "ana@example.com", "password", "s3cret-pass"))
@@ -86,7 +82,6 @@ class AuthContractTest {
     }
 
     @Test
-    @Disabled("TODO(auth): implement AuthService.login and JwtService.generate")
     void loginReturnsTokenInBodyAndHttpOnlyCookie() {
         var response = api().post().uri("/auth/login")
             .body(Map.of("email", "ana@example.com", "password", "s3cret-pass"))
@@ -100,7 +95,6 @@ class AuthContractTest {
     }
 
     @Test
-    @Disabled("TODO(auth): implement AuthService.solve and JwtService.resolveAccountId")
     void solveTurnsAValidTokenIntoTheAccountId() {
         String token = login("ana@example.com", "s3cret-pass");
         var solved = api().post().uri("/auth/solve").body(Map.of("token", token)).retrieve().body(SolvedToken.class);
@@ -108,7 +102,6 @@ class AuthContractTest {
     }
 
     @Test
-    @Disabled("TODO(auth): implement JwtService.resolveAccountId")
     void solveRejectsTamperedAndGarbageTokens() {
         String token = login("ana@example.com", "s3cret-pass");
         String tampered = token.substring(0, token.length() - 2) + (token.endsWith("A") ? "BB" : "AA");
@@ -120,7 +113,6 @@ class AuthContractTest {
     }
 
     @Test
-    @Disabled("TODO(auth): implement AuthService.me")
     void meReturnsTheAccountOfTheGatewayHeader() {
         var me = api().get().uri("/auth/me").header("id-account", "acc-1").retrieve().body(AccountOut.class);
         assertThat(me.email()).isEqualTo("ana@example.com");

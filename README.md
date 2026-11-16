@@ -1,6 +1,6 @@
 # auth-service
 
-Microsserviço de autenticação (Java 25 / Spring Boot 4.1). Cadastra usuários via `account-service`, emite JWTs no login e os valida para o gateway. Não tem banco: o token é autocontido (assinado com HS256).
+Microsserviço de autenticação (Java 25 / Spring Boot 4.1). Cadastra usuários via `account-service`, emite JWTs no login e os valida para o gateway. Não tem banco: o token é autocontido (assinado com HMAC).
 
 ## Fluxo
 
@@ -12,16 +12,11 @@ cliente ──GET /orders (cookie ou Bearer)──▶ gateway ──POST /auth/s
                                             gateway ──id-account: <id>──▶ order
 ```
 
-## Estado: boilerplate
+## Estado da implementação local
 
-| Pronto | Seu (`TODO(auth)`) |
-|---|---|
-| Rotas HTTP, validação, cookie `HttpOnly`/`Secure`/`SameSite` | Fluxo em [`AuthService`](src/main/java/store/auth/AuthService.java) |
-| [`AccountClient`](src/main/java/store/auth/AccountClient.java) (HTTP para o account, timeouts, mapeamento de erros) | Gerar e validar o JWT em [`JwtService`](src/main/java/store/auth/JwtService.java) |
-| Carga da chave: recusa iniciar com `JWT_SECRET` < 32 bytes | |
-| Actuator, Prometheus, OpenAPI, Docker, Compose, k8s, CI/CD | |
+Cadastro e login delegam ao account; JWTs HMAC assinados têm subject, issuer, emissão, início de validade e expiração. Tokens inválidos retornam 401. Os testes de contrato estão ativos. Logout expira o cookie; tokens emitidos continuam válidos até expirar.
 
-Enquanto não implementados, os métodos respondem **501 Not Implemented**. [`AuthContractTest`](src/test/java/store/auth/AuthContractTest.java) roda contra um account-service simulado e descreve o comportamento esperado (com `@Disabled` até você implementar).
+A validação integrada usa o Compose da raiz do agregador. Essa alteração local ainda precisa ser publicada no repositório do serviço antes de atualizar o gitlink.
 
 ## Contrato HTTP
 
@@ -73,3 +68,5 @@ printf 'JWT_SECRET=%s\n' "$(openssl rand -base64 48)" |
 ## Uso de IA
 
 O boilerplate deste repositório (estrutura, configuração, camada HTTP, cliente do account, testes de contrato desabilitados, Docker/k8s/CI) foi gerado com assistência de IA (Claude) e revisado pela equipe. O fluxo de autenticação e o JWT (`TODO(auth)`) são implementados pela equipe. Registre aqui o que cada integrante fez.
+
+A implementação funcional e a ativação dos testes nesta revisão foram feitas com assistência do Codex em 16/11/2026. As referências a TODO no histórico de geração acima descrevem o boilerplate original.
