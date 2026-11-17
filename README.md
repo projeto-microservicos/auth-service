@@ -32,7 +32,7 @@ Enquanto não implementados, os métodos respondem **501 Not Implemented**. [`Au
 | `POST /auth/logout` | 204; expira o cookie |
 | `GET /auth/me` | 200 com a conta do header `id-account` (definido pelo gateway) |
 | `POST /auth/solve` | 200 `{"idAccount"}`; token inválido/expirado 401. **Interno** (o gateway devolve 404) |
-| `GET /auth/health-check` | 200 |
+| `GET /auth/health-check` | 200, sem token; as probes de startup e liveness chamam este endpoint |
 
 ## Configuração
 
