@@ -37,10 +37,13 @@ class AuthSmokeTest {
     }
 
     @Test
-    void logoutExpiresTheHttpOnlyCookie() {
+    void logoutExpiresBothHttpOnlyCookies() {
         var response = api().post().uri("/auth/logout").retrieve().toBodilessEntity();
-        var cookie = response.getHeaders().getFirst("Set-Cookie");
-        assertThat(cookie).startsWith("__store_jwt_token=").contains("Max-Age=0", "HttpOnly", "Secure");
+        var cookies = response.getHeaders().get("Set-Cookie");
+        assertThat(cookies).hasSize(2);
+        assertThat(cookies.get(0)).startsWith("__store_jwt_token=").contains("Max-Age=0", "HttpOnly", "Secure");
+        assertThat(cookies.get(1)).startsWith("__store_refresh_token=")
+            .contains("Max-Age=0", "HttpOnly", "Secure", "Path=/auth/refresh");
     }
 
     @Test
@@ -54,15 +57,15 @@ class AuthSmokeTest {
     @Test
     void weakSecretIsRefusedAtStartup() {
         var weak = new AuthProperties("http://account:8080",
-            new AuthProperties.Jwt("too-short", Duration.ofHours(1), "store-auth"),
-            new AuthProperties.Cookie("__store_jwt_token", true, "Lax"));
+            new AuthProperties.Jwt("too-short", Duration.ofMinutes(15), "store-auth", Duration.ofDays(7)),
+            new AuthProperties.Cookie("__store_jwt_token", "__store_refresh_token", true, "Lax"));
         assertThatThrownBy(() -> new JwtService(weak)).isInstanceOf(IllegalStateException.class);
     }
 
     @Test
     void openApiDocumentsTheContract() {
         var docs = api().get().uri("/v3/api-docs").retrieve().body(String.class);
-        assertThat(docs).contains("/auth/register", "/auth/login", "/auth/solve", "/auth/me");
+        assertThat(docs).contains("/auth/register", "/auth/login", "/auth/refresh", "/auth/solve", "/auth/me");
     }
 
 }
