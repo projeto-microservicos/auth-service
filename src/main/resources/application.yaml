@@ -13,10 +13,13 @@ store:
   jwt:
     # HS256 needs >= 32 bytes. No default on purpose: the service refuses to start without it.
     secret: ${JWT_SECRET}
-    duration: ${JWT_DURATION:PT1H}
+    # Access token: short, OAuth2-style. The client renews it with the refresh token (POST /auth/refresh).
+    duration: ${JWT_DURATION:PT15M}
+    refresh-duration: ${JWT_REFRESH_DURATION:P7D}
     issuer: ${JWT_ISSUER:store-auth}
   cookie:
     name: __store_jwt_token
+    refresh-name: __store_refresh_token
     secure: ${JWT_COOKIE_SECURE:true}
     same-site: ${JWT_COOKIE_SAME_SITE:Lax}
 
